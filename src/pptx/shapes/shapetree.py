@@ -20,6 +20,7 @@ from pptx.shapes.connector import Connector
 from pptx.shapes.freeform import FreeformBuilder
 from pptx.shapes.graphfrm import GraphicFrame
 from pptx.shapes.group import GroupShape
+from pptx.shapes.math import MathShape
 from pptx.shapes.picture import Movie, Picture
 from pptx.shapes.placeholder import (
     ChartPlaceholder,
@@ -394,6 +395,40 @@ class _BaseGroupShapes(_BaseShapes):
         sp = self._add_textbox_sp(left, top, width, height)
         self._recalculate_extents()
         return cast(Shape, self._shape_factory(sp))
+
+    def add_math_equation(
+        self,
+        left: Length | None = None,
+        top: Length | None = None,
+        width: Length | None = None,
+        height: Length | None = None
+    ) -> MathShape:
+        """Return newly added math equation shape appended to this shape tree.
+
+        The math equation shape is created with the specified size and position. If no dimensions
+        are provided, default values are used.
+        """
+        from pptx.shapes.math import MathShape
+        from pptx.util import Emu
+        from pptx.enum.shapes import MSO_SHAPE
+
+        # Default dimensions if not provided
+        if left is None:
+            left = Emu(914400)  # 1 inch
+        if top is None:
+            top = Emu(685800)   # 0.75 inch
+        if width is None:
+            width = Emu(1828800)  # 2 inches
+        if height is None:
+            height = Emu(914400)  # 1 inch
+
+        # Create a basic shape element for math
+        autoshape_type = AutoShapeType(MSO_SHAPE.RECTANGLE)
+        sp = self._add_sp(autoshape_type, left, top, width, height)
+
+        # Create MathShape and return it
+        math_shape = cast(MathShape, self._shape_factory(sp))
+        return math_shape
 
     def build_freeform(
         self, start_x: float = 0, start_y: float = 0, scale: tuple[float, float] | float = 1.0
