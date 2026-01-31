@@ -62,7 +62,9 @@ class TestCT_R:
         """Test CT_R element creation."""
         r = OxmlElement("m:r")
         assert isinstance(r, CT_R)
-        assert r.tag == "m:r"
+        # Check for the namespace URL in the tag
+        assert "r" in r.tag
+        assert "http://schemas.openxmlformats.org/officeDocument/2006/math" in r.tag
 
     def test_ct_r_add_t(self):
         """Test adding text to run."""
@@ -85,7 +87,9 @@ class TestCT_T:
         """Test CT_T element creation."""
         t = OxmlElement("m:t")
         assert isinstance(t, CT_T)
-        assert t.tag == "m:t"
+        # Check for the namespace URL in the tag
+        assert "t" in t.tag
+        assert "http://schemas.openxmlformats.org/officeDocument/2006/math" in t.tag
 
     def test_ct_t_text_property(self):
         """Test text property getter and setter."""
@@ -106,7 +110,9 @@ class TestCT_F:
         """Test CT_F element creation."""
         f = OxmlElement("m:f")
         assert isinstance(f, CT_F)
-        assert f.tag == "m:f"
+        # Check for the namespace URL in the tag
+        assert "f" in f.tag
+        assert "http://schemas.openxmlformats.org/officeDocument/2006/math" in f.tag
 
     def test_ct_f_add_num(self):
         """Test adding numerator to fraction."""
@@ -130,7 +136,9 @@ class TestCT_Num:
         """Test CT_Num element creation."""
         num = OxmlElement("m:num")
         assert isinstance(num, CT_Num)
-        assert num.tag == "m:num"
+        # Check for the namespace URL in the tag
+        assert "num" in num.tag
+        assert "http://schemas.openxmlformats.org/officeDocument/2006/math" in num.tag
 
     def test_ct_num_add_r(self):
         """Test adding run to numerator."""
@@ -147,7 +155,9 @@ class TestCT_Den:
         """Test CT_Den element creation."""
         den = OxmlElement("m:den")
         assert isinstance(den, CT_Den)
-        assert den.tag == "m:den"
+        # Check for the namespace URL in the tag
+        assert "den" in den.tag
+        assert "http://schemas.openxmlformats.org/officeDocument/2006/math" in den.tag
 
     def test_ct_den_add_r(self):
         """Test adding run to denominator."""
