@@ -25,6 +25,6 @@ class MathShape(BaseShape):
         if self._math is None:
             from pptx.math.math import Math
             # Get or create the OMML element from the shape
-            # For now, we'll need to create a basic structure
-            self._math = Math(self._element)
+            # Pass the parent so Math can access the slide
+            self._math = Math(self._element, self._parent)
         return self._math

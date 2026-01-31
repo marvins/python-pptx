@@ -423,11 +423,22 @@ class _BaseGroupShapes(_BaseShapes):
             height = Emu(914400)  # 1 inch
 
         # Create a basic shape element for math
-        autoshape_type = AutoShapeType(MSO_SHAPE.RECTANGLE)
-        sp = self._add_sp(autoshape_type, left, top, width, height)
+        sp = self._add_textbox_sp(left, top, width, height)
+        self._recalculate_extents()
 
-        # Create MathShape and return it
-        math_shape = cast(MathShape, self._shape_factory(sp))
+        # Add a marker to identify this as a math shape
+        # We'll add a custom property to the shape's non-visual properties
+        nvPr = sp.nvSpPr.nvPr
+        from pptx.oxml.ns import qn
+        from pptx.oxml.xmlchemy import OxmlElement
+        math_marker = OxmlElement("p:extLst")
+        ext = OxmlElement("p:ext")
+        ext.set("uri", "http://schemas.openxmlformats.org/presentationml/2006/main/math")
+        math_marker.append(ext)
+        nvPr.append(math_marker)
+
+        # Create MathShape directly
+        math_shape = MathShape(sp, self)
         return math_shape
 
     def build_freeform(
@@ -844,6 +855,20 @@ def BaseShapeFactory(shape_elm: ShapeElement, parent: ProvidesPart) -> BaseShape
         if videoFiles:
             return Movie(shape_elm, parent)
         return Picture(shape_elm, parent)
+
+    # Check for math equation shapes
+    if isinstance(shape_elm, CT_Shape):
+        # Check if this shape has the math marker
+        try:
+            nvPr = shape_elm.xpath(".//p:nvPr")[0]
+            extLst = nvPr.xpath("./p:extLst")
+            if extLst:
+                for ext in extLst[0].xpath(".//*[local-name() = 'ext']"):
+                    uri = ext.get("uri")
+                    if uri == "http://schemas.openxmlformats.org/presentationml/2006/main/math":
+                        return MathShape(shape_elm, parent)
+        except (IndexError, AttributeError):
+            pass
 
     shape_cls = {
         qn("p:cxnSp"): Connector,

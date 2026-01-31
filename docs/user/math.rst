@@ -7,6 +7,9 @@ python-pptx supports adding mathematical equations to slides using OMML (Office 
    **Important:** This OMML feature is a stopgap implementation that provides direct access to PowerPoint's native math format. Future versions may include LaTeX-to-OMML conversion for more convenient equation input. For now, you'll need to work directly with OMML XML or use external tools to convert LaTeX to OMML.
 
 .. note::
+   **Critical Design Note:** PowerPoint stores OMML content at the **slide level**, not in individual shapes. This is a fundamental requirement for proper equation rendering.
+
+.. note::
    OMML is the native PowerPoint math format. If you need LaTeX support, you'll need to convert LaTeX to OMML first using external tools.
 
 Adding Math Equations
@@ -18,82 +21,104 @@ Basic math equation
 To add a simple math equation to a slide::
 
     from pptx import Presentation
+    from pptx.oxml.xmlchemy import OxmlElement
 
     prs = Presentation()
     slide_layout = prs.slide_layouts[0]
     slide = prs.slides.add_slide(slide_layout)
 
-    # Add a math equation using OMML XML
-    omml_xml = """
-    <m:oMath xmlns:m="http://purl.oclc.org/ooxml/officeDocument/math">
-      <m:r><m:t>E = mc²</m:t></m:r>
-    </m:oMath>
-    """
+    # Create OMML structure at slide level
+    oMathPara = OxmlElement("m:oMathPara")
+    oMath = OxmlElement("m:oMath")
 
-    math_shape = slide.shapes.add_math_equation()
-    math_shape.math.add_omml(omml_xml)
+    # Add simple text run
+    r = OxmlElement("m:r")
+    t = OxmlElement("m:t")
+    t.content = "E = mc²"
+    r.append(t)
+    oMath.append(r)
 
-    prs.save('math_equation.pptx')
+    # Add to slide
+    oMathPara.append(oMath)
+    slide._element.append(oMathPara)
 
-Positioning and sizing
-~~~~~~~~~~~~~~~~~~~~~
+    prs.save("math_equation.pptx")
 
-Math shapes behave like other shapes and can be positioned and sized::
+Complex equations
+~~~~~~~~~~~~~~~~~~
 
-    math_shape.left = 100000  # 1 inch in EMUs
-    math_shape.top = 100000   # 1 inch in EMUs
-    math_shape.width = 200000 # 2 inches in EMUs
-    math_shape.height = 100000 # 1 inch in EMUs
+For more complex equations like fractions, superscripts, and radicals::
 
-Complex Equations
------------------
+    # Create a fraction: x/2
+    oMathPara = OxmlElement("m:oMathPara")
+    oMath = OxmlElement("m:oMath")
 
-Fractions
-~~~~~~~~~
+    f = OxmlElement("m:f")
+    num = OxmlElement("m:num")
+    r_num = OxmlElement("m:r")
+    t_num = OxmlElement("m:t")
+    t_num.content = "x"
+    r_num.append(t_num)
+    num.append(r_num)
 
-To create a fraction like x/2::
+    den = OxmlElement("m:den")
+    r_den = OxmlElement("m:r")
+    t_den = OxmlElement("m:t")
+    t_den.content = "2"
+    r_den.append(t_den)
+    den.append(r_den)
 
-    omml_xml = """
-    <m:oMath xmlns:m="http://purl.oclc.org/ooxml/officeDocument/math">
-      <m:f>
-        <m:num>
-          <m:r><m:t>x</m:t></m:r>
-        </m:num>
-        <m:den>
-          <m:r><m:t>2</m:t></m:r>
-        </m:den>
-      </m:f>
-    </m:oMath>
-    """
+    f.append(num)
+    f.append(den)
+    oMath.append(f)
 
-Superscripts and Subscripts
+    oMathPara.append(oMath)
+    slide._element.append(oMathPara)
+
+Unicode math characters
+~~~~~~~~~~~~~~~~~~~~~~~
+
+PowerPoint expects Unicode math characters for proper rendering::
+
+    # Use Unicode math italic characters
+    t.content = "𝑎"  # Mathematical italic small a
+    t.content = "𝑏"  # Mathematical italic small b
+    t.content = "𝑐"  # Mathematical italic small c
+
+Common Unicode math characters:
+- 𝑎, 𝑏, 𝑐, 𝑑, 𝑒, 𝑓, 𝑔, 𝑕, 𝑖, 𝑗, 𝑘, 𝑙, 𝑚, 𝑛, 𝑜, 𝑝, 𝑞, 𝑟, 𝑠, 𝑡, 𝑢, 𝑣, 𝑤, 𝑥, 𝑦, 𝑧, 𝑨, 𝑩
+- 𝑨, 𝑩, 𝑪, 𝑫, 𝑬, 𝑮, 𝑰, 𝑱, 𝑲, 𝑳, 𝑴, 𝑵, 𝑶, 𝑷, 𝑸, 𝑹, 𝑺, 𝑻, 𝑼, 𝑽, 𝑾, 𝑿
+
+OMML Structure Requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For superscripts like x²::
+For proper PowerPoint rendering, OMML must follow this structure:
 
-    omml_xml = """
-    <m:oMath xmlns:m="http://purl.oclc.org/ooxml/officeDocument/math">
-      <m:r><m:t>x</m:t></m:r>
-      <m:sSup>
-        <m:e>
-          <m:r><m:t>2</m:t></m:r>
-        </m:e>
-      </m:sSup>
-    </m:oMath>
-    """
+1. **Slide-level storage**: Add to `slide._element`, not shapes
+2. **oMathPara wrapper**: Required container for equation grouping
+3. **Proper namespace**: `http://schemas.openxmlformats.org/officeDocument/2006/math`
+4. **Unicode characters**: Use mathematical Unicode characters
+5. **Centered alignment**: Use `m:oMathParaPr` with `m:jc val="centerGroup"`
 
-For subscripts like x₁::
+Working with existing equations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    omml_xml = """
-    <m:oMath xmlns:m="http://purl.oclc.org/ooxml/officeDocument/math">
-      <m:r><m:t>x</m:t></m:r>
-      <m:sSub>
-        <m:e>
-          <m:r><m:t>1</m:t></m:r>
-        </m:e>
-      </m:sSub>
-    </m:oMath>
-    """
+To retrieve OMML content from existing presentations::
+
+    # Find all OMML elements in a slide
+    slide_xml = serialize_for_reading(slide._element)
+    omml_matches = re.findall(r'<m:oMath[^>]*>.*?</m:oMath>', slide_xml, re.DOTALL)
+
+    for omml in omml_matches:
+        print(f"Found equation: {omml}")
+
+Limitations
+~~~~~~~~~~~
+
+- **No LaTeX support**: Direct OMML only
+- **Manual positioning**: Equations positioned at slide level
+- **Unicode required**: Regular ASCII letters don't render as math
+- **Complex structure**: Requires understanding OMML XML format
 
 Radicals (Square Roots)
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -226,7 +251,7 @@ To replace the content of an existing math equation::
       <m:r><m:t>y = mx + b</m:t></m:r>
     </m:oMath>
     """
-    
+
     math_shape.math.set_omml(new_omml)
 
 Finding Math Shapes
@@ -235,7 +260,7 @@ Finding Math Shapes
 To find all math shapes on a slide::
 
     math_shapes = [shape for shape in slide.shapes if hasattr(shape, 'math')]
-    
+
     for math_shape in math_shapes:
         print(f"Found math equation: {math_shape.math.get_omml()}")
 
