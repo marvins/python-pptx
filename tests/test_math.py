@@ -5,7 +5,10 @@ from __future__ import annotations
 import pytest
 
 from pptx.oxml.xmlchemy import OxmlElement
-from pptx.oxml.math import CT_OMath, CT_R, CT_T, CT_F, CT_Num, CT_Den
+from pptx.oxml.math import (
+    CT_OMath, CT_R, CT_T, CT_F, CT_Num, CT_Den, CT_SSup, CT_E, CT_Rad,
+    CT_Nary, CT_Char, CT_LimLoc, CT_Sub, CT_Sup
+)
 
 
 class TestCT_OMath:
