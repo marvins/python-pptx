@@ -81,6 +81,34 @@ def when_i_add_math_equation(context, omml_xml):
     context.math_shape = math_shape
 
 
+@when('I add a math equation with fraction "{omml_xml}"')
+def when_i_add_math_equation_with_fraction(context, omml_xml):
+    math_shape = context.slide.shapes.add_math_equation()
+    math_shape.math.add_omml(omml_xml)
+    context.math_shape = math_shape
+
+
+@when('I add a math equation with superscript "{omml_xml}"')
+def when_i_add_math_equation_with_superscript(context, omml_xml):
+    math_shape = context.slide.shapes.add_math_equation()
+    math_shape.math.add_omml(omml_xml)
+    context.math_shape = math_shape
+
+
+@when('I add a math equation with radical "{omml_xml}"')
+def when_i_add_math_equation_with_radical(context, omml_xml):
+    math_shape = context.slide.shapes.add_math_equation()
+    math_shape.math.add_omml(omml_xml)
+    context.math_shape = math_shape
+
+
+@when('I add a math equation with summation "{omml_xml}"')
+def when_i_add_math_equation_with_summation(context, omml_xml):
+    math_shape = context.slide.shapes.add_math_equation()
+    math_shape.math.add_omml(omml_xml)
+    context.math_shape = math_shape
+
+
 @when("I position the math shape at left {left:d}, top {top:d}")
 def when_i_position_math_shape(context, left, top):
     context.math_shape.left = Emu(left)
@@ -180,7 +208,7 @@ def then_math_shape_should_contain_square_root(context, content):
 def then_math_shape_should_contain_summation(context):
     omml_xml = context.math_shape.math.get_omml()
     assert "<m:nary>" in omml_xml, "No n-ary element found"
-    assert '<m:chr val="∑">' in omml_xml, "No summation character found"
+    assert '<m:chr val="∑">' in omml_xml or '<m:chr val="∑"/>' in omml_xml, "No summation character found"
     assert "<m:t>i=1</m:t>" in omml_xml, "Lower limit not found"
     assert "<m:t>n</m:t>" in omml_xml, "Upper limit not found"
     assert "<m:t>i</m:t>" in omml_xml, "Expression not found"
