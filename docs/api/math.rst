@@ -189,21 +189,6 @@ ShapeTree Integration
 
    * ``MathShape`` object for accessing and manipulating the equation
 
-   **Example Usage:**
-
-   .. code-block:: python
-
-      # Add equation to slide
-      math_shape = slide.shapes.add_math_equation(
-          left=Inches(2),
-          top=Inches(1),
-          width=Inches(4),
-          height=Inches(1)
-      )
-
-      # Add OMML content
-      math_shape.math.add_omml('<m:oMath><m:r><m:t>x² + y² = z²</m:t></m:r></m:oMath>')
-
 OMML Structure Requirements
 -----------------------
 
@@ -237,20 +222,12 @@ PowerPoint requires a specific XML structure for mathematical equations:
 
 **Key Components:**
 
+* **Note:** Powerpoint and Word use different XML structures for math equations.  They share most of the XML format, but have unique tags for other portions.
 * ``mc:AlternateContent`` - Compatibility wrapper for Office 2010+ features
 * ``a14:m`` - Office 2010 extension that allows OMML in DrawingML
 * ``m:oMathPara`` - Container for equation formatting and alignment
 * ``m:oMath`` - The actual mathematical content
 * ``a:rPr`` - Run properties for font, color, and language formatting
-
-**Automatic Formatting:**
-
-The Math class automatically applies:
-
-* **Font**: Cambria Math with proper panose values
-* **Language**: en-US locale setting
-* **Color**: Integration with PowerPoint color schemes
-* **Size**: Appropriate text sizing for equations
 
 Limitations
 -----------
