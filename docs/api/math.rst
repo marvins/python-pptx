@@ -8,15 +8,6 @@ Overview
 
 The math module provides a high-level interface for adding mathematical equations to PowerPoint slides. It handles the complex XML structure required by PowerPoint, including the `mc:AlternateContent` wrapper, `a14:m` extension elements, and automatic formatting with Cambria Math font.
 
-Key Features
-------------
-
-* **Automatic Formatting**: OMML elements are automatically formatted with proper PowerPoint-compatible properties
-* **Font Management**: Cambria Math font and language attributes applied automatically
-* **Color Support**: Text properties include color scheme integration
-* **Namespace Handling**: Complex PowerPoint namespace requirements handled internally
-* **Compatibility**: Includes fallback content for older PowerPoint versions
-
 Math objects
 -------------
 
@@ -38,9 +29,128 @@ Math objects
 
    .. code-block:: python
 
-      # Create a math equation
-      math_shape = slide.shapes.add_math_equation()
-      math_shape.math.add_omml('<m:oMath><m:r><m:t>x = 1</m:t></m:r></m:oMath>')
+      # Direct XML approach (as used in the working demo)
+      complete_omml_xml = '''<mc:AlternateContent xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+        <mc:Choice xmlns:a14="http://schemas.microsoft.com/office/drawing/2010/main" Requires="a14">
+          <p:sp>
+            <p:txBody>
+              <a:bodyPr wrap="none">
+                <a:spAutoFit/>
+              </a:bodyPr>
+              <a:lstStyle/>
+              <a:p>
+                <a:pPr/>
+                <a14:m>
+                  <m:oMathPara xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math">
+                    <m:oMathParaPr>
+                      <m:jc m:val="centerGroup"/>
+                    </m:oMathParaPr>
+                    <m:oMath>
+                      <m:r>
+                        <a:rPr lang="en-US" sz="2800" b="0" i="1" smtClean="0">
+                          <a:solidFill>
+                            <a:schemeClr val="bg1"/>
+                          </a:solidFill>
+                          <a:latin typeface="Cambria Math" panose="02040503050406030204" pitchFamily="18" charset="0"/>
+                        </a:rPr>
+                        <m:t>x = </m:t>
+                      </m:r>
+                      <m:f>
+                        <m:num>
+                          <m:r>
+                            <a:rPr lang="en-US" sz="2800" b="0" i="1" smtClean="0">
+                              <a:solidFill>
+                                <a:schemeClr val="bg1"/>
+                              </a:solidFill>
+                              <a:latin typeface="Cambria Math" panose="02040503050406030204" pitchFamily="18" charset="0"/>
+                            </a:rPr>
+                            <m:t>-b ± </m:t>
+                          </m:r>
+                          <m:rad>
+                            <m:radPr/>
+                            <m:deg/>
+                            <m:e>
+                              <m:r>
+                                <a:rPr lang="en-US" sz="2800" b="0" i="1" smtClean="0">
+                                  <a:solidFill>
+                                    <a:schemeClr val="bg1"/>
+                                  </a:solidFill>
+                                  <a:latin typeface="Cambria Math" panose="02040503050406030204" pitchFamily="18" charset="0"/>
+                                </a:rPr>
+                                <m:t>b² - 4ac</m:t>
+                              </m:r>
+                            </m:e>
+                          </m:rad>
+                        </m:num>
+                        <m:den>
+                          <m:r>
+                            <a:rPr lang="en-US" sz="2800" b="0" i="1" smtClean="0">
+                              <a:solidFill>
+                                <a:schemeClr val="bg1"/>
+                              </a:solidFill>
+                              <a:latin typeface="Cambria Math" panose="02040503050406030204" pitchFamily="18" charset="0"/>
+                            </a:rPr>
+                            <m:t>2a</m:t>
+                          </m:r>
+                        </m:den>
+                      </m:f>
+                    </m:oMath>
+                  </m:oMathPara>
+                </a14:m>
+                <a:endParaRPr lang="en-US" sz="2800" dirty="0">
+                  <a:solidFill>
+                    <a:schemeClr val="bg1"/>
+                  </a:solidFill>
+                </a:endParaRPr>
+              </a:p>
+            </p:txBody>
+          </p:sp>
+        </mc:Choice>
+        <mc:Fallback>
+          <p:sp>
+            <p:nvSpPr>
+              <p:cNvPr id="3" name="TextBox 3">
+                <a:extLst>
+                  <a:ext uri="{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}">
+                    <a16:creationId xmlns:a16="http://schemas.microsoft.com/office/drawing/2014/main" id="{6F2CE406-D9A3-8D9C-6BAC-B21E81A4A63E}"/>
+                  </a:ext>
+                </a:extLst>
+              </p:cNvPr>
+              <p:cNvSpPr txBox="1">
+                <a:spLocks noRot="1" noChangeAspect="1" noMove="1" noResize="1" noEditPoints="1" noAdjustHandles="1" noChangeArrowheads="1" noChangeShapeType="1" noTextEdit="1"/>
+              </p:cNvSpPr>
+              <p:nvPr/>
+            </p:nvSpPr>
+            <p:spPr>
+              <a:xfrm>
+                <a:off x="914400" y="1828800"/>
+                <a:ext cx="4572000" cy="914400"/>
+              </a:xfrm>
+              <a:prstGeom prst="rect">
+                <a:avLst/>
+              </a:prstGeom>
+              <a:noFill/>
+            </p:spPr>
+            <p:txBody>
+              <a:bodyPr/>
+              <a:lstStyle/>
+              <a:p>
+                <a:r>
+                    <a:rPr lang="en-US">
+                      <a:noFill/>
+                    </a:rPr>
+                    <a:t> </a:t>
+                </a:r>
+              </a:p>
+            </p:txBody>
+          </p:sp>
+        </mc:Fallback>
+      </mc:AlternateContent>'''
+
+      from pptx.oxml import parse_xml
+      alt_content_element = parse_xml(complete_omml_xml)
+      sp_tree = slide.element.xpath('.//*[local-name() = "spTree"]')[0]
+      sp_tree.append(alt_content_element)
 
 MathShape objects
 ------------------
@@ -52,10 +162,6 @@ MathShape objects
    :inherited-members:
 
    MathShape provides the interface between PowerPoint shapes and mathematical content. Each MathShape contains a Math object that manages the OMML content.
-
-   **Key Properties:**
-
-   * ``math`` - Access to the Math object for OMML manipulation
 
    **Example Usage:**
 
