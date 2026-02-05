@@ -252,83 +252,9 @@ The Math class automatically applies:
 * **Color**: Integration with PowerPoint color schemes
 * **Size**: Appropriate text sizing for equations
 
-Working Examples
----------------
-
-**Simple Equation:**
-
-.. code-block:: python
-
-   # Basic equation
-   prs = Presentation()
-   slide = prs.slides.add_slide(prs.slide_layouts[6])
-   math_shape = slide.shapes.add_math_equation()
-   math_shape.math.add_omml('<m:oMath><m:r><m:t>E = mc²</m:t></m:r></m:oMath>')
-   prs.save('equation.pptx')
-
-**Complex Equation with Fraction:**
-
-.. code-block:: python
-
-   # Fraction using OMML structure
-   fraction_omml = '''
-   <m:oMath>
-     <m:f>
-       <m:num><m:r><m:t>x + y</m:t></m:r></m:num>
-       <m:den><m:r><m:t>2</m:t></m:r></m:den>
-     </m:f>
-   </m:oMath>
-   '''
-
-   math_shape.math.add_omml(fraction_omml)
-
-**Quadratic Formula (Complete Example):**
-
-.. code-block:: python
-
-   # Complex quadratic formula with square root
-   quadratic_omml = '''
-   <m:oMath>
-     <m:r><m:t>x = </m:t></m:r>
-     <m:f>
-       <m:num>
-         <m:r><m:t>-b ± </m:t></m:r>
-         <m:rad>
-           <m:radPr/>
-           <m:deg/>
-           <m:e>
-             <m:r><m:t>b² - 4ac</m:t></m:r>
-           </m:e>
-         </m:rad>
-       </m:num>
-       <m:den>
-         <m:r><m:t>2a</m:t></m:r>
-       </m:den>
-     </m:f>
-   </m:oMath>
-   '''
-
-   math_shape.math.add_omml(quadratic_omml)
-
-Important Notes
---------------
-
-* **Namespace Handling**: The Math class automatically handles complex PowerPoint namespace requirements
-* **Font Requirements**: PowerPoint requires Cambria Math for proper equation rendering
-* **Compatibility**: The `mc:AlternateContent` structure ensures compatibility with PowerPoint 2010+
-* **Color Schemes**: Use ``a:schemeClr`` for integration with presentation themes
-* **Validation**: OMML content is validated to ensure proper structure
-
 Limitations
 -----------
 
-* **PowerPoint-Specific**: The current implementation is optimized for PowerPoint's requirements
-* **XML Complexity**: Direct OMML manipulation requires understanding of PowerPoint's XML structure
-* **Font Dependencies**: Cambria Math font must be available for proper rendering
-
-See Also
---------
-
-* :doc:`/api/shapes.html` - Shape collection and shape tree methods
-* :doc:`/api/oxml.html` - Low-level XML element classes
-* :doc:`/api/dml.html` - DrawingML formatting properties
+* Users must provide fully-compliant PowerPoint OMML strings.
+* Direct XML manipulation requires understanding of PowerPoint's XML structure.
+* Future update should provide OMML builder support which is docx and pptx agnostic.
