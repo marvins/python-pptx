@@ -22,9 +22,6 @@ A complete working example that creates a PowerPoint slide with:
 
 **Results:**
 
-.. image:: images/quadratic_formula_slide.png
-   :alt: PowerPoint slide showing quadratic formula with blue background and white text
-
 .. image:: images/image.png
    :alt: Additional mathematical equation example screenshot
 
